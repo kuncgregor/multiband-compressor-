@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="S2m5bR" name="multiband_comp" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="17"
-              companyName="Aerio">
+              companyName="Aerio" pluginRTASCategory="2">
   <MAINGROUP id="umFG4m" name="multiband_comp">
     <GROUP id="{478CCE05-F590-501B-8323-DEACFB34AF2D}" name="Source">
       <FILE id="M9Y5qK" name="PluginProcessor.cpp" compile="1" resource="0"
@@ -18,8 +18,7 @@
   <EXPORTFORMATS>
     <VS2019 targetFolder="Builds/VisualStudio2019">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="multiband_comp" enablePluginBinaryCopyStep="1"
-                       vst3BinaryLocation="C:\Program Files\Common Files\VST3"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="multiband_comp" enablePluginBinaryCopyStep="1"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="multiband_comp"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
