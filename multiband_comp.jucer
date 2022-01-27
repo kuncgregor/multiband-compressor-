@@ -18,7 +18,8 @@
   <EXPORTFORMATS>
     <VS2019 targetFolder="Builds/VisualStudio2019">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="multiband_comp" enablePluginBinaryCopyStep="1"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="multiband_comp" enablePluginBinaryCopyStep="1"
+                       vst3BinaryLocation="C:\Program Files\Common Files\VST3"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="multiband_comp"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
