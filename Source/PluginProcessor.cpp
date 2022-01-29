@@ -22,20 +22,20 @@ Multiband_compAudioProcessor::Multiband_compAudioProcessor()
                        )
 #endif
 {
-    attack = dynamic_cast<juce::AudioParameterFloat*>(apvst.getParameter("Attack"));
-    jassert(attack != nullptr);
+    compressor.attack = dynamic_cast<juce::AudioParameterFloat*>(apvst.getParameter("Attack"));
+    jassert(compressor.attack != nullptr);
 
-    release = dynamic_cast<juce::AudioParameterFloat*>(apvst.getParameter("Release"));
-    jassert(release != nullptr);
+    compressor.release = dynamic_cast<juce::AudioParameterFloat*>(apvst.getParameter("Release"));
+    jassert(compressor.release != nullptr);
 
-    threshold = dynamic_cast<juce::AudioParameterFloat*>(apvst.getParameter("Threshold"));
-    jassert(threshold != nullptr);
+    compressor.threshold = dynamic_cast<juce::AudioParameterFloat*>(apvst.getParameter("Threshold"));
+    jassert(compressor.threshold != nullptr);
 
-    ratio = dynamic_cast<juce::AudioParameterChoice*>(apvst.getParameter("Ratio"));
-    jassert(ratio != nullptr);
+    compressor.ratio = dynamic_cast<juce::AudioParameterChoice*>(apvst.getParameter("Ratio"));
+    jassert(compressor.ratio != nullptr);
 
-    bypassed = dynamic_cast<juce::AudioParameterBool*>(apvst.getParameter("Bypassed"));
-    jassert(bypassed != nullptr);
+    compressor.bypassed = dynamic_cast<juce::AudioParameterBool*>(apvst.getParameter("Bypassed"));
+    jassert(compressor.bypassed != nullptr);
 }
 
 Multiband_compAudioProcessor::~Multiband_compAudioProcessor()
@@ -164,7 +164,7 @@ void Multiband_compAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
-
+    /*
     compressor.setAttack(attack->get());
     compressor.setRelease(release->get());
     compressor.setThreshold(threshold->get());
@@ -176,6 +176,9 @@ void Multiband_compAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     context.isBypassed = bypassed->get();
     
     compressor.process(context);
+    */
+    compressor.updateCompressorSettings();
+    compressor.process(buffer);
 }
 
 //==============================================================================
