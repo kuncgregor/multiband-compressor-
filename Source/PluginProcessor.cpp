@@ -22,6 +22,20 @@ Multiband_compAudioProcessor::Multiband_compAudioProcessor()
                        )
 #endif
 {
+    attack = dynamic_cast<juce::AudioParameterFloat*>(apvst.getParameter("Attack"));
+    jassert(attack != nullptr);
+
+    release = dynamic_cast<juce::AudioParameterFloat*>(apvst.getParameter("Release"));
+    jassert(release != nullptr);
+
+    threshold = dynamic_cast<juce::AudioParameterFloat*>(apvst.getParameter("Threshold"));
+    jassert(threshold != nullptr);
+
+    ratio = dynamic_cast<juce::AudioParameterChoice*>(apvst.getParameter("Ratio"));
+    jassert(ratio != nullptr);
+
+    bypassed = dynamic_cast<juce::AudioParameterBool*>(apvst.getParameter("Bypassed"));
+    jassert(bypassed != nullptr);
 }
 
 Multiband_compAudioProcessor::~Multiband_compAudioProcessor()
@@ -95,6 +109,13 @@ void Multiband_compAudioProcessor::prepareToPlay (double sampleRate, int samples
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+
+    juce::dsp::ProcessSpec spec;
+    spec.maximumBlockSize = samplesPerBlock;
+    spec.numChannels = getTotalNumOutputChannels();
+    spec.sampleRate = sampleRate;
+
+    compressor.prepare(spec);
 }
 
 void Multiband_compAudioProcessor::releaseResources()
@@ -144,18 +165,17 @@ void Multiband_compAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
+    compressor.setAttack(attack->get());
+    compressor.setRelease(release->get());
+    compressor.setThreshold(threshold->get());
+    compressor.setRatio(ratio->getCurrentChoiceName().getFloatValue());
 
-        // ..do something to the data...
-    }
+    auto block = juce::dsp::AudioBlock<float>(buffer);
+    auto context = juce::dsp::ProcessContextReplacing<float>(block);
+
+    context.isBypassed = bypassed->get();
+    
+    compressor.process(context);
 }
 
 //==============================================================================
@@ -175,12 +195,20 @@ void Multiband_compAudioProcessor::getStateInformation (juce::MemoryBlock& destD
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+    juce::MemoryOutputStream mos(destData, true);
+    apvst.state.writeToStream(mos);
 }
 
 void Multiband_compAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+
+    auto tree = juce::ValueTree::readFromData(data, sizeInBytes);
+    if (tree.isValid()) {
+        apvst.replaceState(tree);
+    } 
+
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout Multiband_compAudioProcessor::createParameterLayout() {
@@ -188,8 +216,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout Multiband_compAudioProcessor
     APVTS::ParameterLayout layout;
     using namespace juce;
 
-    layout.add(std::make_unique<AudioParameterFloat>("Treshold", 
-                                                    "Treshold", 
+    layout.add(std::make_unique<AudioParameterFloat>("Threshold", 
+                                                    "Threshold", 
                                                     NormalisableRange<float>(-60, 12, 1, 1),
                                                     0));
 
@@ -200,8 +228,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout Multiband_compAudioProcessor
                                                     attackReleseRange, 
                                                     250));
 
-    layout.add(std::make_unique < AudioParameterFloat>("Relese",
-                                                        "Relese",
+    layout.add(std::make_unique < AudioParameterFloat>("Release",
+                                                        "Release",
                                                         attackReleseRange,
                                                         50));
 
@@ -213,6 +241,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout Multiband_compAudioProcessor
 
     layout.add(std::make_unique<AudioParameterChoice>("Ratio", "Ratio", sa, 3));
 
+    layout.add(std::make_unique<AudioParameterBool>("Bypassed", "Bypassed", false));
+
+    
 
     return layout;
 }
