@@ -161,7 +161,11 @@ public:
 
 private:
     
-    CompressorBand compressor;
+    std::array<CompressorBand, 3> compressor;
+    CompressorBand& lowBandComp = compressor[0];
+    CompressorBand& midBandComp = compressor[1];
+    CompressorBand& highBandComp = compressor[2];
+
 
     using  Filter = juce::dsp::LinkwitzRileyFilter<float>;
          // fc0  fc1
