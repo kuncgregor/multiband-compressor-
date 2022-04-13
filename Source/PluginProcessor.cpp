@@ -11,17 +11,24 @@
 
 //==============================================================================
 Multiband_compAudioProcessor::Multiband_compAudioProcessor()
-#ifndef JucePlugin_PreferredChannelConfigurations
-     : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                      #endif
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                     #endif
-                       )
+
+#if 0 //ndef JucePlugin_PreferredChannelConfigurations
+    : AudioProcessor(BusesProperties()
+#if ! JucePlugin_IsMidiEffect
+#if ! JucePlugin_IsSynth
+        .withInput("Input", juce::AudioChannelSet::stereo(), true)
+#endif
+        .withOutput("Output", juce::AudioChannelSet::stereo(), true)
+#endif
+    )
 #endif
 {
+    magicState.setGuiValueTree(BinaryData::final_upam, BinaryData::final_upamSize);
+   
+    magicState.setApplicationSettingsFile(juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory)
+        .getChildFile(ProjectInfo::companyName)
+        .getChildFile(ProjectInfo::projectName + juce::String(".settings")));
+
     using namespace Params;
     const auto& params = GetParams();
 
@@ -32,16 +39,16 @@ Multiband_compAudioProcessor::Multiband_compAudioProcessor()
 
     };
 
-    floatHelper(lowBandComp.attack,     Names::Attack_Low_Band);
-    floatHelper(lowBandComp.release,    Names::Release_Low_Band);
-    floatHelper(lowBandComp.threshold,  Names::Threshold_Low_Band);
+    floatHelper(lowBandComp.attack, Names::Attack_Low_Band);
+    floatHelper(lowBandComp.release, Names::Release_Low_Band);
+    floatHelper(lowBandComp.threshold, Names::Threshold_Low_Band);
 
-    floatHelper(midBandComp.attack,     Names::Attack_Mid_Band);
-    floatHelper(midBandComp.release,    Names::Release_Mid_Band);
-    floatHelper(midBandComp.threshold,  Names::Threshold_Mid_Band);
+    floatHelper(midBandComp.attack, Names::Attack_Mid_Band);
+    floatHelper(midBandComp.release, Names::Release_Mid_Band);
+    floatHelper(midBandComp.threshold, Names::Threshold_Mid_Band);
 
-    floatHelper(highBandComp.attack,    Names::Attack_High_Band);
-    floatHelper(highBandComp.release,   Names::Release_High_Band);
+    floatHelper(highBandComp.attack, Names::Attack_High_Band);
+    floatHelper(highBandComp.release, Names::Release_High_Band);
     floatHelper(highBandComp.threshold, Names::Threshold_High_Band);
 
     auto choiceHelper = [&apvts = this->apvts, &params](auto& param, const auto& paramName) {
@@ -51,9 +58,9 @@ Multiband_compAudioProcessor::Multiband_compAudioProcessor()
 
     };
 
-    choiceHelper(lowBandComp.ratio,     Names::Ratio_Low_Band);
-    choiceHelper(midBandComp.ratio,     Names::Ratio_Mid_Band);
-    choiceHelper(highBandComp.ratio,    Names::Ratio_High_Band);
+    choiceHelper(lowBandComp.ratio, Names::Ratio_Low_Band);
+    choiceHelper(midBandComp.ratio, Names::Ratio_Mid_Band);
+    choiceHelper(highBandComp.ratio, Names::Ratio_High_Band);
 
     auto boolHelper = [&apvts = this->apvts, &params](auto& param, const auto& paramName) {
 
@@ -62,17 +69,17 @@ Multiband_compAudioProcessor::Multiband_compAudioProcessor()
 
     };
 
-    boolHelper(lowBandComp.bypassed,    Names::Bypassed_Low_Band);
-    boolHelper(midBandComp.bypassed,    Names::Bypassed_Mid_Band);
-    boolHelper(highBandComp.bypassed,   Names::Bypassed_High_Band);
+    boolHelper(lowBandComp.bypassed, Names::Bypassed_Low_Band);
+    boolHelper(midBandComp.bypassed, Names::Bypassed_Mid_Band);
+    boolHelper(highBandComp.bypassed, Names::Bypassed_High_Band);
 
-    boolHelper(lowBandComp.mute,    Names::Mute_Low_Band);
-    boolHelper(midBandComp.mute,    Names::Mute_Mid_Band);
-    boolHelper(highBandComp.mute,   Names::Mute_High_Band);
+    boolHelper(lowBandComp.mute, Names::Mute_Low_Band);
+    boolHelper(midBandComp.mute, Names::Mute_Mid_Band);
+    boolHelper(highBandComp.mute, Names::Mute_High_Band);
 
-    boolHelper(lowBandComp.solo,    Names::Solo_Low_Band);
-    boolHelper(midBandComp.solo,    Names::Solo_Mid_Band);
-    boolHelper(highBandComp.solo,   Names::Solo_High_Band);
+    boolHelper(lowBandComp.solo, Names::Solo_Low_Band);
+    boolHelper(midBandComp.solo, Names::Solo_Mid_Band);
+    boolHelper(highBandComp.solo, Names::Solo_High_Band);
 
     floatHelper(lowMidCrossover, Names::Low_Mid_Crossover_Freq);
     floatHelper(midHighCrossover, Names::Mid_High_Crossover_Freq);
@@ -104,29 +111,29 @@ const juce::String Multiband_compAudioProcessor::getName() const
 
 bool Multiband_compAudioProcessor::acceptsMidi() const
 {
-   #if JucePlugin_WantsMidiInput
+#if JucePlugin_WantsMidiInput
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 bool Multiband_compAudioProcessor::producesMidi() const
 {
-   #if JucePlugin_ProducesMidiOutput
+#if JucePlugin_ProducesMidiOutput
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 bool Multiband_compAudioProcessor::isMidiEffect() const
 {
-   #if JucePlugin_IsMidiEffect
+#if JucePlugin_IsMidiEffect
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 double Multiband_compAudioProcessor::getTailLengthSeconds() const
@@ -145,21 +152,21 @@ int Multiband_compAudioProcessor::getCurrentProgram()
     return 0;
 }
 
-void Multiband_compAudioProcessor::setCurrentProgram (int index)
+void Multiband_compAudioProcessor::setCurrentProgram(int index)
 {
 }
 
-const juce::String Multiband_compAudioProcessor::getProgramName (int index)
+const juce::String Multiband_compAudioProcessor::getProgramName(int index)
 {
     return {};
 }
 
-void Multiband_compAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void Multiband_compAudioProcessor::changeProgramName(int index, const juce::String& newName)
 {
 }
 
 //==============================================================================
-void Multiband_compAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void Multiband_compAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
@@ -172,7 +179,7 @@ void Multiband_compAudioProcessor::prepareToPlay (double sampleRate, int samples
     for (auto& comp : compressor) {
         comp.prepare(spec);
     }
-    
+
 
     LP1.prepare(spec);
     HP1.prepare(spec);
@@ -205,35 +212,35 @@ void Multiband_compAudioProcessor::releaseResources()
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool Multiband_compAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool Multiband_compAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
 {
-  #if JucePlugin_IsMidiEffect
-    juce::ignoreUnused (layouts);
+#if JucePlugin_IsMidiEffect
+    juce::ignoreUnused(layouts);
     return true;
-  #else
+#else
     // This is the place where you check if the layout is supported.
     // In this template code we only support mono or stereo.
     // Some plugin hosts, such as certain GarageBand versions, will only
     // load plugins that support stereo bus layouts.
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+        && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
     // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
+#if ! JucePlugin_IsSynth
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
-   #endif
+#endif
 
     return true;
-  #endif
+#endif
 }
 #endif
 
 void Multiband_compAudioProcessor::updateState() {
     for (auto& cmp : compressor)
         cmp.updateCompressorSettings();
-    
+
     auto lowMidCutoffFreq = lowMidCrossover->get();
     LP1.setCutoffFrequency(lowMidCutoffFreq);
     HP1.setCutoffFrequency(lowMidCutoffFreq);
@@ -314,7 +321,7 @@ void Multiband_compAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer
             inputBuffer.addFrom(i, 0, source, i, 0, ns);
         }
     };
- 
+
     auto bandsAreSoloed = false;
     for (auto& comp : compressor) {
         if (comp.solo->get()) {
@@ -335,28 +342,32 @@ void Multiband_compAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer
     else {
         for (rsize_t i = 0; i < compressor.size(); ++i) {
             auto& comp = compressor[i];
-            if(!comp.mute->get())
+            if (!comp.mute->get())
                 addFilterBand(buffer, filterBuffers[i]);
         }
     }
 
     applyGain(buffer, outputGain);
-    
+
 }
 
 //==============================================================================
+
 bool Multiband_compAudioProcessor::hasEditor() const
 {
     return true; // (change this to false if you choose to not supply an editor)
 }
-
+/*
 juce::AudioProcessorEditor* Multiband_compAudioProcessor::createEditor()
 {
-    return new Multiband_compAudioProcessorEditor (*this);
-}
+    return new foleys::MagicPluginEditor (magicState);
+    //return new Multiband_compAudioProcessorEditor(*this);
+}*/
+
+
 
 //==============================================================================
-void Multiband_compAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void Multiband_compAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
@@ -365,7 +376,7 @@ void Multiband_compAudioProcessor::getStateInformation (juce::MemoryBlock& destD
     apvts.state.writeToStream(mos);
 }
 
-void Multiband_compAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void Multiband_compAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
@@ -373,7 +384,7 @@ void Multiband_compAudioProcessor::setStateInformation (const void* data, int si
     auto tree = juce::ValueTree::readFromData(data, sizeInBytes);
     if (tree.isValid()) {
         apvts.replaceState(tree);
-    } 
+    }
 
 }
 
@@ -445,7 +456,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Multiband_compAudioProcessor
         params.at(Names::Solo_Low_Band),
         params.at(Names::Solo_Low_Band),
         false));
-    
+
     //MID======================================================================================= 
     layout.add(std::make_unique<AudioParameterFloat>(
         params.at(Names::Threshold_Mid_Band),
@@ -527,7 +538,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Multiband_compAudioProcessor
         params.at(Names::Mid_High_Crossover_Freq),
         NormalisableRange<float>(1000, 20000, 1, 1),
         2000));
-    
+
 
     return layout;
 }

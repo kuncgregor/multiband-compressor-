@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<magic>
+  <Styles>
+    <Style name="default">
+      <Nodes/>
+      <Classes>
+        <plot-view border="2" background-color="black" border-color="silver" display="contents"/>
+        <nomargin margin="0" padding="0" border="0"/>
+        <group margin="5" padding="5" border="2" flex-direction="column"/>
+        <transparent background-color="transparentblack"/>
+      </Classes>
+      <Types>
+        <Slider border="0" slider-textbox="textbox-below"/>
+        <ToggleButton border="0" max-height="50" caption-size="0" text="Active"/>
+        <TextButton border="0" max-height="50" caption-size="0"/>
+        <ComboBox border="0" max-height="50" caption-size="0"/>
+        <Plot border="0" margin="0" padding="0" background-color="00000000"
+              radius="0"/>
+        <XYDragComponent border="0" margin="0" padding="0" background-color="00000000"
+                         radius="0"/>
+      </Types>
+      <Palettes>
+        <default/>
+      </Palettes>
+    </Style>
+  </Styles>
+  <View resizable="0" resize-corner="0" flex-direction="column" id="multiband"
+        width="1000" height="1000">
+    <View min-width="4" min-height="4" flex-align-self="auto" display="flexbox"
+          flex-align-content="start" flex-align-items="start" flex-justify-content="center">
+      <View flex-direction="column" min-height="4" min-width="4" flex-grow="1"
+            flex-shrink="1" caption="LOW" lookAndFeel="FoleysFinest" caption-color="FF8EB12E"
+            border="1">
+        <Slider slider-type="linear-horizontal" caption="prag" parameter="Threshold Low Band"
+                flex-align-self="stretch" flex-order="0" slider-textbox="textbox-right"/>
+        <Slider slider-type="linear-horizontal" caption="napad" parameter="Attack Low Band"
+                slider-textbox="textbox-right"/>
+        <Slider slider-type="linear-horizontal" caption="spuscanje" parameter="Release Low Band"
+                slider-textbox="textbox-right"/>
+        <Slider slider-type="linear-horizontal" caption="razmerje" parameter="Ratio Low Band"
+                slider-textbox="textbox-right" pos-x="-5.2356%" pos-y="41.3793%"
+                pos-width="100%" pos-height="16.6667%"/>
+        <ToggleButton visibility="" lookAndFeel="LookAndFeel_V4" parameter="Bypassed Low Band"
+                      value="" caption="bypass" caption-placement="centred" flex-align-self="stretch"
+                      toggle-text="FFFF00FF" toggle-tick-disabled="FF000000" toggle-tick="FF00FF4C"/>
+        <ToggleButton visibility="" lookAndFeel="LookAndFeel_V4" parameter="Mute Low Band"
+                      value="" caption="mute" caption-placement="centred" flex-align-self="stretch"
+                      toggle-text="FFFF00FF" toggle-tick-disabled="FF000000" toggle-tick="FF00FF4C"/>
+      </View>
+      <View flex-direction="column" min-height="4" min-width="4" flex-grow="1"
+            flex-shrink="1" caption="MID" caption-color="FF82B437" radius="1"
+            border="1">
+        <Slider slider-type="linear-horizontal" caption="prag" parameter="Threshold Mid Band"
+                flex-align-self="stretch" flex-order="0" slider-textbox="textbox-right"/>
+        <Slider slider-type="linear-horizontal" caption="napad" parameter="Attack Mid Band"
+                slider-textbox="textbox-right"/>
+        <Slider slider-type="linear-horizontal" caption="spuscanje" parameter="Release Mid Band"
+                slider-textbox="textbox-right"/>
+        <Slider slider-type="linear-horizontal" caption="razmerje" parameter="Ratio Mid Band"
+                slider-textbox="textbox-right"/>
+        <ToggleButton visibility="" lookAndFeel="LookAndFeel_V4" parameter="Bypassed Mid Band"
+                      value="" caption="bypass" caption-placement="centred" flex-align-self="stretch"
+                      toggle-text="FFFF00FF" toggle-tick-disabled="FF000000" toggle-tick="FF00FF4C"/>
+        <ToggleButton visibility="" lookAndFeel="LookAndFeel_V4" parameter="Mute Mid Band"
+                      value="" caption="mute" caption-placement="centred" flex-align-self="stretch"
+                      toggle-text="FFFF00FF" toggle-tick-disabled="FF000000" toggle-tick="FF00FF4C"/>
+      </View>
+      <View flex-direction="column" min-height="4" min-width="4" flex-grow="1"
+            flex-shrink="1" caption="HIGH" caption-color="FF2DFF00" border="1">
+        <Slider slider-type="linear-horizontal" caption="prag" parameter="Threshold High Band"
+                flex-align-self="stretch" flex-order="0" slider-textbox="textbox-right"/>
+        <Slider slider-type="linear-horizontal" caption="napad" parameter="Attack High Band"
+                slider-textbox="textbox-right"/>
+        <Slider slider-type="linear-horizontal" caption="spuscanje" parameter="Release High Band"
+                slider-textbox="textbox-right"/>
+        <Slider slider-type="linear-horizontal" caption="razmerje" parameter="Ratio High Band"
+                slider-textbox="textbox-right"/>
+        <ToggleButton visibility="" lookAndFeel="LookAndFeel_V4" parameter="Bypassed High Band"
+                      value="" caption="bypass" caption-placement="centred" flex-align-self="stretch"
+                      toggle-text="FFFF00FF" toggle-tick-disabled="FF000000" toggle-tick="FF00FF4C"/>
+        <ToggleButton visibility="" lookAndFeel="LookAndFeel_V4" parameter="Mute High Band"
+                      value="" caption="mute" caption-placement="centred" flex-align-self="stretch"
+                      toggle-text="FFFF00FF" toggle-tick-disabled="FF000000" toggle-tick="FF00FF4C"/>
+      </View>
+    </View>
+    <View caption-placement="centred-bottom" border="1">
+      <Slider parameter="Gain In" slider-textbox="textbox-below" id="gainin"
+              caption-placement="centred-bottom" slider-type="rotary" caption="GAIN-IN"
+              caption-color="FF0006FF" pos-x="-1.57978%" pos-y="-2.34375%"
+              pos-width="33.3333%" pos-height="100%"/>
+      <View flex-direction="column" border="1">
+        <Slider parameter="Low-Mid Crossover Freq" slider-type="linear-horizontal"
+                slider-textbox="textbox-below" value="gain" id="low-mid" caption="low-mid"/>
+        <Slider parameter="Mid-High Crossover_Freq" slider-type="linear-horizontal"
+                caption="mid-high"/>
+      </View>
+      <Slider parameter="Gain Out" slider-textbox="textbox-below" id="gainout"
+              caption-placement="centred-bottom" slider-type="rotary" pos-width="0.5"
+              caption="GAIN-OUT" caption-color="FF3900FF"/>
+    </View>
+  </View>
+</magic>
