@@ -1,3 +1,5 @@
+https://github.com/kuncgregor/MB_comp/releases/tag/VST3_GUI_test
+
 VST3 fx plugin v keterem lahko obdeluješ kompresijo zvoka v treh različnih "pasovih" posebi. 
 
 - Lahko se ga uporabi v kateremkoli DAWu ali pa v okolju kjer lahko uporablaš VST3 plugine. 
